@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CategoryTabs from '../components/post/CategoryTabs';
 import PostCard from '../components/post/PostCard';
 import './home.css';
@@ -10,6 +11,7 @@ const categories = [
 ];
 
 export default function Home() {
+  const navigate = useNavigate(); // 오타 수정!
   const [activeCategory, setActiveCategory] = useState('전체');
   const [posts, setPosts] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(true);
@@ -19,17 +21,19 @@ export default function Home() {
   };
 
   const handleLogin = () => {
-    // TODO: 로그인 페이지로 이동 로직
-    console.log('로그인 페이지로 이동');
+    navigate('/login'); 
+  };
+
+  const handleRegister = () => {
+    navigate('/register');
   };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
-    console.log('로그아웃');
   };
 
   const handleWritePost = () => {
-    console.log('글쓰기');
+    navigate('/write');
   };
 
   return (
@@ -41,10 +45,14 @@ export default function Home() {
           justifyContent: 'space-between',
           alignItems: 'center',
           width: '100%',
-          padding: '0 10px',
+          padding: '0 20px',
           margin: 0
         }}>
-          <h1 className="logo">
+          <h1 
+            className="logo"
+            onClick={() => navigate('/')}
+            style={{ cursor: 'pointer' }}
+          >
             외국인 커뮤니티
           </h1>
 
@@ -54,13 +62,14 @@ export default function Home() {
                 <button
                   onClick={handleWritePost}
                   style={{
-                    padding: '8px 16px',
+                    padding: '10px 20px',
                     backgroundColor: '#28a745',
                     color: 'white',
                     border: 'none',
                     borderRadius: '6px',
                     fontSize: '14px',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    fontWeight: '500'
                   }}
                 >
                   글쓰기
@@ -69,7 +78,7 @@ export default function Home() {
                 <button
                   onClick={handleLogout}
                   style={{
-                    padding: '8px 16px',
+                    padding: '10px 20px',
                     backgroundColor: '#6c757d',
                     color: 'white',
                     border: 'none',
@@ -86,26 +95,29 @@ export default function Home() {
                 <button
                   onClick={handleLogin}
                   style={{
-                    padding: '8px 16px',
+                    padding: '10px 20px',
                     backgroundColor: '#007bff',
                     color: 'white',
                     border: 'none',
                     borderRadius: '6px',
                     fontSize: '14px',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    fontWeight: '500'
                   }}
                 >
                   로그인
                 </button>
                 <button
+                  onClick={handleRegister}
                   style={{
-                    padding: '8px 16px',
+                    padding: '10px 20px',
                     backgroundColor: 'white',
                     color: '#007bff',
-                    border: '1px solid #007bff',
+                    border: '2px solid #007bff',
                     borderRadius: '6px',
                     fontSize: '14px',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    fontWeight: '500'
                   }}
                 >
                   회원가입
@@ -143,22 +155,30 @@ export default function Home() {
                 textAlign: 'center', 
                 color: '#999', 
                 gridColumn: '1 / -1',
-                padding: '60px 20px'
+                padding: '80px 20px',
+                backgroundColor: 'white',
+                borderRadius: '12px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
               }}>
-                <h3 style={{ marginBottom: '10px' }}>아직 게시글이 없습니다</h3>
-                <p>첫 번째 게시글을 작성해보세요!</p>
+              
+                <h3 style={{ marginBottom: '10px', fontSize: '24px', color: '#333' }}>
+                  
+                </h3>
+                <p style={{ marginBottom: '30px', fontSize: '16px' }}>
+                  첫 번째 게시글을 작성해보세요!
+                </p>
                 {isLoggedIn && (
                   <button
                     onClick={handleWritePost}
                     style={{
-                      marginTop: '20px',
                       padding: '12px 24px',
                       backgroundColor: '#007bff',
                       color: 'white',
                       border: 'none',
                       borderRadius: '6px',
                       fontSize: '16px',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      fontWeight: '500'
                     }}
                   >
                     글쓰기
