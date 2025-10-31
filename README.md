@@ -28,3 +28,14 @@
 - **Tools**: GitHub, IntelliJ, VScode, Gradle  
 
 ---
+
+## 📅 Weekly Project Logs
+
+| Week | Report |
+|---|---|
+| 1주차 | [Week 1 Log](docs/weekly-log/week1.md) |
+| 2주차 | 
+| 3주차 | 준비중 |
+
+
+
