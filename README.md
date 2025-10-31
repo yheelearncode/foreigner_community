@@ -29,7 +29,7 @@
 
 ---
 
-## 📅 Weekly Project Logs
+## 📅 주차별 팀 활동일지
 
 | Week | Report |
 |---|---|
