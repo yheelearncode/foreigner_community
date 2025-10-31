@@ -39,3 +39,9 @@
 | 4주차 | [Week 4](docs/weekly-log/week4.md) |
 | x | x |
 | 6주차 | [Week 6](docs/weekly-log/week5.md) |
+
+## SpringBoot 개인 공부
+| [김가원](docs/gawon/) |
+| [이용희](docs/yonghee/) |
+| [이현승 ](docs/hyunseong/) |
+| [BATKHISHIG ](study/BATKHISHIG/) |
