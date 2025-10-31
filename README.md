@@ -44,7 +44,7 @@
 ## SpringBoot 개인 공부
 | 이름 | Study 링크 |
 |---|---|
-| 김가원 | [김가원 Study](study/Gawon/) |
-| 이용희 | [이용희 Study](study/Yonghee/) |
-| 이현승 | [이현승 Study](study/Hyunseong/) |
-| Batkhishig | [Batkhishig Study](study/Batkhishgig/) |
+| 김가원 | [김가원](study/Gawon/) |
+| 이용희 | [이용희](study/Yonghee/) |
+| 이현승 | [이현승](study/Hyunseong/) |
+| Batkhishig | [Batkhishig](study/Batkhishgig/) |
