@@ -41,7 +41,7 @@
 | 6주차 | [Week 6](docs/weekly-log/week5.md) |
 
 ## SpringBoot 개인 공부
-| 팀원 | 공부 링크 |
+| 이름 | 공부 링크 |
 |---|---|
 | 김가원 | [김가원 공부 폴더](study/Gawon/) |
 | 이용희 | [이용희 공부 폴더](study/Yonghee/) |
