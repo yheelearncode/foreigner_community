@@ -6,9 +6,24 @@
 </head>
 <body>
     <h1>번역 예제</h1>
+	
+	<p th:text="${detection}"></p>
+	
+	<h2 id="title" th:text="${title}">Where is the School of Computer Science building?</h2>
 
-    <h2 th:text="${original}"></h2>
-	<p th:text="${lang}"></p>
-	<h2 th:text="${translated}"></h2>
+	<p id="body" th:text="${body}">I'm currently in the Central Library. How do I get to the Software Engineering building from here?</p>
+
+    <button id="translate">View Original Text</button>
+	
+<script>
+	document.getElementById("translate").addEventListener("click", () => {
+		fetch("/change-translation-state")
+			.then(response => response.json())
+			.then(data => {
+				document.getElementById("title").innerText = data.newValue;
+			});
+	});
+</script>
 </body>
+
 </html>
