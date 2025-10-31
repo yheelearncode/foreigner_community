@@ -33,17 +33,18 @@
 
 | Week | Report |
 |---|---|
-| x | x |
+| 1주차 | OT |
 | 2주차 | [Week 2](docs/weekly-log/week1.md) |
 | 3주차 | [Week 3](docs/weekly-log/week3.md) |
 | 4주차 | [Week 4](docs/weekly-log/week4.md) |
-| x | x |
+| 5 | 휴강 |
 | 6주차 | [Week 6](docs/weekly-log/week5.md) |
+| 7주차 | [Week 7](docs/weekly-log/week7.md) |
 
 ## SpringBoot 개인 공부
-| 이름 | 공부 링크 |
+| 이름 | Study 링크 |
 |---|---|
-| 김가원 | [김가원 공부 폴더](study/Gawon/) |
-| 이용희 | [이용희 공부 폴더](study/Yonghee/) |
-| 이현승 | [이현승 공부 폴더](study/Hyunseong/) |
-| Batkhishig | [Batkhishig 공부 폴더](study/Batkhishgig/) |
+| 김가원 | [김가원](study/Gawon/) |
+| 이용희 | [이용희](study/Yonghee/) |
+| 이현승 | [이현승](study/Hyunseong/) |
+| Batkhishig | [Batkhishig](study/Batkhishgig/) |
