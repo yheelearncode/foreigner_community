@@ -29,13 +29,13 @@
 
 ---
 
-## 📅 Weekly Project Logs
+<details>
+<summary>📅 Weekly Logs</summary>
 
-| Week | Report |
-|---|---|
-| 1주차 | [Week 1 Log](docs/weekly-log/week1.md) |
-| 2주차 | 
-| 3주차 | 준비중 |
+- [1주차 보고서](docs/weekly-log/week1.md)
+- [2주차 보고서](docs/weekly-log/week2.md)
+- 3주차 (업로드 예정)
 
+</details>
 
 
