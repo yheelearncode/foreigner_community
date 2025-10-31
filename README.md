@@ -42,9 +42,9 @@
 | 7주차 | [Week 7](docs/weekly-log/week7.md) |
 
 ## SpringBoot 개인 공부
-| 이름 | 공부 링크 |
+| 이름 | Study 링크 |
 |---|---|
-| 김가원 | [김가원 공부 폴더](study/Gawon/) |
-| 이용희 | [이용희 공부 폴더](study/Yonghee/) |
-| 이현승 | [이현승 공부 폴더](study/Hyunseong/) |
-| Batkhishig | [Batkhishig 공부 폴더](study/Batkhishgig/) |
+| 김가원 | [김가원 Study](study/Gawon/) |
+| 이용희 | [이용희 Study](study/Yonghee/) |
+| 이현승 | [이현승 Study](study/Hyunseong/) |
+| Batkhishig | [Batkhishig Study](study/Batkhishgig/) |
