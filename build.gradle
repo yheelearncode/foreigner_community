@@ -37,6 +37,11 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	
+	implementation platform('com.google.cloud:libraries-bom:26.69.0')
+	implementation 'com.google.cloud:google-cloud-storage'
+
+	implementation 'com.google.cloud:google-cloud-translate:2.76.0'
 }
 
 tasks.named('test') {
