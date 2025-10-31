@@ -37,7 +37,7 @@
 | 2주차 | [Week 2](docs/weekly-log/week1.md) |
 | 3주차 | [Week 3](docs/weekly-log/week3.md) |
 | 4주차 | [Week 4](docs/weekly-log/week4.md) |
-| 5 | 휴강 |
+| 5주차 | 휴강 |
 | 6주차 | [Week 6](docs/weekly-log/week5.md) |
 | 7주차 | [Week 7](docs/weekly-log/week7.md) |
 
