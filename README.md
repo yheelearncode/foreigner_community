@@ -33,6 +33,7 @@
 
 | Week | Report |
 |---|---|
-| 1주차 | [Week 1](docs/weekly-log/week1.md) |
-| 2주차 | [Week 2](docs/weekly-log/week2.md) |
-| 3주차 | [Week 3](docs/weekly-log/week2.md) |
+| x | x |
+| 2주차 | [Week 2](docs/weekly-log/week1.md) |
+| 3주차 | [Week 3](docs/weekly-log/week3.md) |
+| 4주차 | [Week 3](docs/weekly-log/week4.md) |
