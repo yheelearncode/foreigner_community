@@ -40,3 +40,68 @@
 .read-the-docs {
   color: #888;
 }
+
+.App {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* 컨테이너 스타일 */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  width: 100%;
+}
+
+/* 반응형 컨테이너 */
+@media (max-width: 1440px) {
+  .container {
+    max-width: 1200px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .container {
+    max-width: 960px;
+    padding: 0 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    max-width: 100%;
+    padding: 0 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 10px;
+  }
+}
+
+/* 그리드 반응형 */
+.posts-grid {
+  display: grid;
+  gap: 25px;
+  width: 100%;
+}
+
+@media (min-width: 1400px) {
+  .posts-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1399px) {
+  .posts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 899px) {
+  .posts-grid {
+    grid-template-columns: 1fr;
+  }
+}
