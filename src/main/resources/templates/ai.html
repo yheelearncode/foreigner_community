@@ -5,7 +5,7 @@
     <title>Google Cloud Translation 예제</title>
 </head>
 <body>
-    <h1>번역 예제</h1>
+    <h1>Google AI API 사용 예제</h1>
 	
 	<p th:text="${detection}"></p>
 	
@@ -13,16 +13,40 @@
 
 	<p id="body" th:text="${body}">I'm currently in the Central Library. How do I get to the Software Engineering building from here?</p>
 
-    <button id="translate">View Original Text</button>
+	<button id="translate">View Translated Text</button>
+	
+	<button id="ai">Generate AI Summary</button>
+	<p td="summary" th:text="${ai}"></p>
 	
 <script>
+	translated = false;
 	document.getElementById("translate").addEventListener("click", () => {
 		fetch("/change-translation-state")
 			.then(response => response.json())
 			.then(data => {
-				document.getElementById("title").innerText = data.newValue;
+				if (translated) {
+					document.getElementById("title").innerText = data.original_title;
+					document.getElementById("body").innerText = data.original_body;
+					document.getElementById("translate").innerText = "View Translated Text";
+				} else {
+					document.getElementById("title").innerText = data.translated_title;
+					document.getElementById("body").innerText = data.translated_body;
+					document.getElementById("translate").innerText = "View Original Text";
+				}
 			});
+		translated = !translated;
 	});
+	
+	summary = false;
+	document.getElementById("ai").addEventListener("click", () => {
+		if (!summary) {
+			fetch("/generate-ai-summary")
+				.then(response => response.json())
+				.then(data => {
+					document.getElementById("summary").innerText = data.result;
+				})
+		}
+	})
 </script>
 </body>
 

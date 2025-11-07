@@ -42,6 +42,7 @@ dependencies {
 	implementation 'com.google.cloud:google-cloud-storage'
 
 	implementation 'com.google.cloud:google-cloud-translate:2.76.0'
+	implementation 'com.google.genai:google-genai:1.25.0'
 }
 
 tasks.named('test') {
