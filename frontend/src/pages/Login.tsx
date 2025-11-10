@@ -1,154 +1,245 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
+  const [isLogin, setIsLogin] = useState(true);
+  const [form, setForm] = useState({
+    email: '',
+    password: '',
+    name: '',
+    confirmPassword: ''
+  });
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    try {
-      const response = await fetch('http://localhost:8080/api/users/login', {
+    if (isLogin) {
+      // 로그인
+      const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email: form.email, password: form.password })
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('로그인 성공:', data);
+      
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('userId', data.userId);
         alert('로그인 성공!');
-        navigate('/');
+        navigate('/campus-map');
       } else {
         alert('로그인 실패');
       }
-    } catch (error) {
-      console.error('로그인 에러:', error);
-      alert('로그인 중 오류가 발생했습니다.');
+    } else {
+      // 회원가입
+      if (form.password !== form.confirmPassword) {
+        alert('비밀번호가 일치하지 않습니다.');
+        return;
+      }
+      
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email: form.email, 
+          password: form.password,
+          name: form.name 
+        })
+      });
+      
+      if (res.ok) {
+        alert('회원가입 성공! 로그인해주세요.');
+        setIsLogin(true);
+        setForm({ email: '', password: '', name: '', confirmPassword: '' });
+      } else {
+        alert('회원가입 실패');
+      }
     }
   };
 
   return (
     <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#f8f9fa',
+      width: '100vw',
+      height: '100vh',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
     }}>
       <div style={{
-        backgroundColor: 'white',
+        background: 'white',
         padding: '40px',
-        borderRadius: '12px',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-        width: '100%',
-        maxWidth: '400px'
+        borderRadius: '16px',
+        boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+        minWidth: '400px',
+        maxWidth: '450px'
       }}>
-        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <h1 style={{ fontSize: '32px', marginBottom: '10px' }}>🌍</h1>
-          <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#333', marginBottom: '8px' }}>
-            로그인
-          </h2>
-          <p style={{ color: '#666', fontSize: '14px' }}>
-            외국인 커뮤니티에 오신 것을 환영합니다
-          </p>
-        </div>
-
+        <h2 style={{
+          margin: '0 0 24px 0',
+          fontSize: '28px',
+          fontWeight: '600',
+          color: '#333',
+          textAlign: 'center'
+        }}>
+          {isLogin ? '🔐 로그인' : '✨ 회원가입'}
+        </h2>
+        
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{
-              display: 'block',
-              marginBottom: '8px',
-              fontSize: '14px',
-              fontWeight: '500',
-              color: '#333'
+          {!isLogin && (
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: 8, 
+                fontWeight: '500', 
+                color: '#555' 
+              }}>
+                이름
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                placeholder="이름을 입력하세요"
+                required={!isLogin}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
+          )}
+          
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ 
+              display: 'block', 
+              marginBottom: 8, 
+              fontWeight: '500', 
+              color: '#555' 
             }}>
               이메일
             </label>
             <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="이메일을 입력하세요"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="example@email.com"
+              required
               style={{
                 width: '100%',
                 padding: '12px',
                 border: '1px solid #ddd',
-                borderRadius: '6px',
+                borderRadius: '8px',
                 fontSize: '14px',
                 boxSizing: 'border-box'
               }}
-              required
             />
           </div>
-
-          <div style={{ marginBottom: '30px' }}>
-            <label style={{
-              display: 'block',
-              marginBottom: '8px',
-              fontSize: '14px',
-              fontWeight: '500',
-              color: '#333'
+          
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ 
+              display: 'block', 
+              marginBottom: 8, 
+              fontWeight: '500', 
+              color: '#555' 
             }}>
               비밀번호
             </label>
             <input
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              name="password"
+              value={form.password}
+              onChange={handleChange}
               placeholder="비밀번호를 입력하세요"
+              required
               style={{
                 width: '100%',
                 padding: '12px',
                 border: '1px solid #ddd',
-                borderRadius: '6px',
+                borderRadius: '8px',
                 fontSize: '14px',
                 boxSizing: 'border-box'
               }}
-              required
             />
           </div>
-
+          
+          {!isLogin && (
+            <div style={{ marginBottom: 24 }}>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: 8, 
+                fontWeight: '500', 
+                color: '#555' 
+              }}>
+                비밀번호 확인
+              </label>
+              <input
+                type="password"
+                name="confirmPassword"
+                value={form.confirmPassword}
+                onChange={handleChange}
+                placeholder="비밀번호를 다시 입력하세요"
+                required={!isLogin}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
+          )}
+          
           <button
             type="submit"
             style={{
               width: '100%',
               padding: '14px',
-              backgroundColor: '#007bff',
-              color: 'white',
               border: 'none',
-              borderRadius: '6px',
+              borderRadius: '8px',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
               fontSize: '16px',
-              fontWeight: '500',
+              fontWeight: '600',
               cursor: 'pointer',
-              marginBottom: '20px'
+              marginBottom: '16px'
             }}
           >
-            로그인
+            {isLogin ? '로그인' : '회원가입'}
           </button>
         </form>
-
-        <div style={{ textAlign: 'center' }}>
-          <p style={{ color: '#666', fontSize: '14px' }}>
-            계정이 없으신가요?{' '}
-            <span 
-              onClick={() => navigate('/register')}
-              style={{ color: '#007bff', cursor: 'pointer', fontWeight: '500' }}
-            >
-              회원가입
-            </span>
-          </p>
-        </div>
-
-        <div style={{ textAlign: 'center', marginTop: '20px' }}>
-          <span 
-            onClick={() => navigate('/')}
-            style={{ color: '#999', cursor: 'pointer', fontSize: '14px' }}
+        
+        <div style={{ textAlign: 'center', fontSize: '14px', color: '#666' }}>
+          {isLogin ? '계정이 없으신가요?' : '이미 계정이 있으신가요?'}
+          <button
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setForm({ email: '', password: '', name: '', confirmPassword: '' });
+            }}
+            style={{
+              marginLeft: '8px',
+              background: 'none',
+              border: 'none',
+              color: '#667eea',
+              fontWeight: '600',
+              cursor: 'pointer',
+              fontSize: '14px'
+            }}
           >
-            ← 홈으로 돌아가기
-          </span>
+            {isLogin ? '회원가입' : '로그인'}
+          </button>
         </div>
       </div>
     </div>
