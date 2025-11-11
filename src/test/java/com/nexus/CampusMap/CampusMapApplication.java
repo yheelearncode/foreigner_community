@@ -1,10 +1,10 @@
-package com.nexus.foreigner_community;
+package com.nexus.CampusMap;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ForeignerCommunityApplicationTests {
+class CampusMapApplicationTests {
 
 	@Test
 	void contextLoads() {

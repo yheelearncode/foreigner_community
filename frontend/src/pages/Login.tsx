@@ -20,20 +20,26 @@ export default function Login() {
     
     if (isLogin) {
       // 로그인
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: form.email, password: form.password })
-      });
-      
-      if (res.ok) {
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: form.email, password: form.password })
+        });
+        
         const data = await res.json();
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('userId', data.userId);
-        alert('로그인 성공!');
-        navigate('/campus-map');
-      } else {
-        alert('로그인 실패');
+        
+        if (res.ok) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('userId', data.userId);
+          alert('로그인 성공!');
+          navigate('/map');
+        } else {
+          alert(data.error || '로그인 실패');
+        }
+      } catch (error) {
+        console.error('로그인 에러:', error);
+        alert('서버 연결에 실패했습니다.');
       }
     } else {
       // 회원가입
@@ -42,22 +48,29 @@ export default function Login() {
         return;
       }
       
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          email: form.email, 
-          password: form.password,
-          name: form.name 
-        })
-      });
-      
-      if (res.ok) {
-        alert('회원가입 성공! 로그인해주세요.');
-        setIsLogin(true);
-        setForm({ email: '', password: '', name: '', confirmPassword: '' });
-      } else {
-        alert('회원가입 실패');
+      try {
+        const res = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            email: form.email, 
+            password: form.password,
+            username: form.name 
+          })
+        });
+        
+        const data = await res.json();
+        
+        if (res.ok) {
+          alert('회원가입 성공! 로그인해주세요.');
+          setIsLogin(true);
+          setForm({ email: '', password: '', name: '', confirmPassword: '' });
+        } else {
+          alert(data.error || '회원가입 실패');
+        }
+      } catch (error) {
+        console.error('회원가입 에러:', error);
+        alert('서버 연결에 실패했습니다.');
       }
     }
   };
