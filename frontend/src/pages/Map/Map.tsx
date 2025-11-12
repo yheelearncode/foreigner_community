@@ -294,7 +294,7 @@ const Map: React.FC = () => {
         {/* --- 헤더 --- */}
         <div className="flex justify-between items-center mb-2 border-b pb-3">
             <h1 className="text-2xl font-extrabold text-gray-900 flex items-center">
-                <MapPin className="w-6 h-6 mr-2 text-blue-600"/> Campus Navigator
+                <MapPin className="w-6 h-6 mr-2 text-blue-600"/> Campus Map
             </h1>
             {/* 언어 설정 드롭다운 */}
             <select 
