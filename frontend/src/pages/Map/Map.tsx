@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-// import axios from 'axios'; // 백엔드 통신용 라이브러리, 백엔드 연동 시 주석 해제 (npm install axios 필요)
+import axios from 'axios';
 import './Map.css';
 
 // =========================================================================
@@ -52,14 +52,15 @@ const ChevronUp = ({ className }: { className: string }) => <span className={cla
 // =========================================================================
 const GOOGLE_MAPS_API_KEY: string = 'AIzaSyCDxsILUDpeMAgMN1c_oeLKqysbtPO0AZQ'; // API
 const CHUNGBUK_CENTER: LatLng = { lat: 36.6276, lng: 127.4578 }; // 지도 중앙 좌표
+const API_BASE_URL: string = 'http://localhost:8080/api';
 
-const DUMMY_LOCATIONS: LocationData[] = [
+/* const DUMMY_LOCATIONS: LocationData[] = [
   { id: 1, name: 'Main Gate', lat: 36.6264, lng: 127.4578, description: 'Chungbuk National University Main Gate.', category: 'Main', nameKo: '정문' },
   { id: 2, name: 'Law School (Building B)', lat: 36.6247, lng: 127.4560, description: 'The law school building.', category: 'Academic', nameKo: '법학전문대학원' },
   { id: 3, name: 'Library (Building A)', lat: 36.6277, lng: 127.4572, description: 'The central library.', category: 'Academic', nameKo: '중앙도서관' },
   { id: 4, name: 'Headquarters (Building C)', lat: 36.6284, lng: 127.4589, description: 'Admin building.', category: 'Admin', nameKo: '본부' },
   { id: 5, name: 'Gaesin Cultural Center', lat: 36.6253, lng: 127.4593, description: 'Cultural events venue.', category: 'Culture', nameKo: '개신문화관' },
-];
+]; */
 
 const DUMMY_POSTS_DB: { [key: number]: PostData[] } = {
     3: [
@@ -93,22 +94,34 @@ const Map: React.FC = () => {
   const [recommendedPosts, setRecommendedPosts] = useState<PostData[]>([]);
   const [isLoadingPosts, setIsLoadingPosts] = useState<boolean>(false);
   const [selectedLanguage, setSelectedLanguage] = useState<string>('en');
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+  const [locations, setLocations] = useState<LocationData[]>([]);
 
   // 카테고리 목록
   const categories: string[] = useMemo(() => ['All', 'Main', 'Academic', 'Admin', 'Culture'], []); 
 
   // === 데이터 필터링 ===
   const filteredLocations: LocationData[] = useMemo(() => {
-    return DUMMY_LOCATIONS.filter((loc: LocationData) => {
+    return locations.filter((loc: LocationData) => {
       const matchesCategory: boolean = selectedCategory === 'All' || loc.category === selectedCategory;
       const matchesSearch: boolean = loc.name.toLowerCase().includes(searchQuery.toLowerCase()) || loc.nameKo.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
-  }, [searchQuery, selectedCategory]);
+  }, [searchQuery, selectedCategory, locations]);
 
   const filteredLocationIds: Set<number> = useMemo(() => {
     return new Set(filteredLocations.map((loc: LocationData) => loc.id));
   }, [filteredLocations]);
+
+  const fetchLocations = useCallback(async () => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/locations`);
+            setLocations(response.data); 
+            console.log("Successfully fetched locations from backend:", response.data);
+        } catch (error) {
+            console.error("Error fetching locations:", error);
+        }
+    }, []);
 
 
   // =========================================================================
@@ -160,7 +173,7 @@ const Map: React.FC = () => {
     // (4) 커뮤니티 게시물 로드 트리거
     if (shouldOpen) {
         fetchPostsForBuilding(loc.id);
-        setCommunityTab('recommend'); // Auto-switch to recommended tab
+        setCommunityTab('recommend');
     } else {
         setRecommendedPosts([]);
     }
@@ -209,39 +222,49 @@ const Map: React.FC = () => {
   
   // (3) 지도 인스턴스 및 초기 마커 생성
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current || mapInstanceRef.current) return;
+    if (isMapLoaded && !mapInstanceRef.current) {
 
-    // 지도 인스턴스 생성
-    const mapInstance = new window.google.maps.Map(mapRef.current, {
-      center: CHUNGBUK_CENTER,
-      zoom: 15,
-      disableDefaultUI: true, 
-      zoomControl: true,
-    });
-    mapInstanceRef.current = mapInstance; 
-    
-    // 마커 생성 (모든 장소)
-    DUMMY_LOCATIONS.forEach((loc: LocationData) => {
-      const marker = new window.google.maps.Marker({
-        position: { lat: loc.lat, lng: loc.lng },
-        map: mapInstance,
-        title: loc.name,
-        visible: true 
+      // 지도 인스턴스 생성
+      const mapInstance = new window.google.maps.Map(mapRef.current, {
+        center: CHUNGBUK_CENTER,
+        zoom: 15,
+        disableDefaultUI: true, 
+        zoomControl: true,
       });
+      mapInstanceRef.current = mapInstance; 
+
+      fetchLocations(); 
+    }
+
+  }, [isMapLoaded, handleBuildingSelect, fetchLocations]);
+
+  useEffect(() => {
+        if (!mapInstanceRef.current || locations.length === 0) return;
+
+        Object.values(allMarkersRef.current).forEach((marker: any) => marker.setMap(null));
+        allMarkersRef.current = {};
+
+        locations.forEach((loc: LocationData) => {
+            const marker = new window.google.maps.Marker({
+                position: { lat: loc.lat, lng: loc.lng },
+                map: mapInstanceRef.current,
+                title: loc.nameKo, 
+                visible: true 
+            });
       
-      // 마커 클릭 이벤트 리스너 등록
-      marker.addListener('click', () => {
-        handleBuildingSelect(loc); 
-      });
-      allMarkersRef.current[loc.id] = marker; 
-    });
+            // 마커 클릭 이벤트 리스너 등록
+            marker.addListener('click', () => {
+              handleBuildingSelect(loc); 
+            });
+            allMarkersRef.current[loc.id] = marker; 
+        });
 
-  }, [isMapLoaded, handleBuildingSelect]);
+  }, [locations, handleBuildingSelect]);
 
   // (4) 현재 위치 마커 생성 및 업데이트
   useEffect(() => {
       // 지도가 생성되었고, 위치 정보가 업데이트되었을 때 실행
-      if (!mapInstanceRef.current || !currentLocation) return;
+      if (!mapInstanceRef.current || !currentLocation || !isMapLoaded) return;
       
       // 기존 마커가 있으면 제거 (이전 위치 마커)
       if (currentMarkerRef.current) {
@@ -258,7 +281,30 @@ const Map: React.FC = () => {
       
       currentMarkerRef.current = marker; // 마커 인스턴스 저장
 
-  }, [currentLocation]); 
+  }, [currentLocation, isMapLoaded]); 
+
+  useEffect(() => {
+    if (!mapInstanceRef.current || !isMapLoaded) return;
+
+    // 1. 렌더링 후 맵 크기 강제 재계산
+    const resizeTimer = setTimeout(() => {
+        window.google.maps.event.trigger(mapInstanceRef.current, 'resize'); 
+        mapInstanceRef.current.setCenter(CHUNGBUK_CENTER);
+    }, 200);
+
+    // 2. 윈도우 리사이즈 리스너 추가 (사용 중 화면 크기 변경에 대응)
+    const handleWindowResize = () => {
+        window.google.maps.event.trigger(mapInstanceRef.current, 'resize');
+    };
+    
+    window.addEventListener('resize', handleWindowResize);
+
+    // 클린업 함수
+    return () => {
+        clearTimeout(resizeTimer);
+        window.removeEventListener('resize', handleWindowResize);
+    };
+  }, [isMapLoaded]);
 
   // (4) 마커 가시성 제어 (필터링 또는 검색 시 실행)
   useEffect(() => {
@@ -277,14 +323,42 @@ const Map: React.FC = () => {
   if (!isMapLoaded) return <div className="p-4 text-center font-bold">Loading map...</div>;
 
 
-  // =========================================================================
+  // =============t============================================================
   // 4. JSX 렌더링 (와이어프레임 UI)
   // =========================================================================
 
   return (
-    <div className="app-container font-sans">
+    <div className="full-screen-wrapper font-sans">
       {/* Tailwind CSS와 사용자 정의 스타일 로드 */}
       <script src="https://cdn.tailwindcss.com"></script>
+
+      {/* =================================== */}
+      {/* 0. 상단 헤더 바 */}
+      {/* =================================== */}
+      <header className="main-header">
+            <div className='flex items-center'>
+                <h1 className="text-xl font-extrabold text-white flex items-center">
+                    <MapPin className="w-5 h-5 mr-2 text-yellow-300"/> Campus Map
+                </h1>
+            </div>
+            <nav className="flex items-center space-x-4">
+                <button className="nav-btn" onClick={() => alert("마이페이지 이동 기능 구현 필요")}>
+                    마이페이지
+                </button>
+                {isAuthenticated ? (
+                    <button className="auth-btn" onClick={() => setIsAuthenticated(false)}>
+                        로그아웃
+                    </button>
+                ) : (
+                    <button className="auth-btn" onClick={() => setIsAuthenticated(true)}>
+                        로그인
+                    </button>
+                )}
+            </nav>
+        </header>
+      
+      {/* 사이드바와 지도를 감싸는 컨테이너 (Flex Row) */}
+      <div className="app-content-container">
       
       {/* =================================== */}
       {/* 1. 좌측 사이드바 (와이어프레임 UI) */}
@@ -294,7 +368,7 @@ const Map: React.FC = () => {
         {/* --- 헤더 --- */}
         <div className="flex justify-between items-center mb-2 border-b pb-3">
             <h1 className="text-2xl font-extrabold text-gray-900 flex items-center">
-                <MapPin className="w-6 h-6 mr-2 text-blue-600"/> Campus Map
+                <Globe className="w-6 h-6 mr-2 text-blue-600"/> 장소 목록
             </h1>
             {/* 언어 설정 드롭다운 */}
             <select 
@@ -311,12 +385,12 @@ const Map: React.FC = () => {
         
         {/* --- 검색 및 카테고리 --- */}
         <div>
-          <h2 className="section-title">Location Search</h2>
+          <h2 className="section-title">위치 검색</h2>
           <div className="input-wrapper">
             <span className="icon"><Search className="w-5 h-5"/></span>
             <input
               type="text"
-              placeholder="Search Building or Classroom"
+              placeholder="건물 또는 강의실 검색 (한/영)"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -328,7 +402,7 @@ const Map: React.FC = () => {
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
             >
-              <option value="All">All Categories</option>
+              <option value="All">전체</option>
               {categories.slice(1).map((cat: string) => (
                 <option key={cat} value={cat}>{cat}</option>
               ))}
@@ -339,7 +413,7 @@ const Map: React.FC = () => {
         {/* --- 목적지 정보 패널 --- */}
         <div className="destination-panel">
           <h2 className="text-lg font-bold text-gray-800 mb-2 border-b pb-2">
-            Selected Location
+            선택된 위치
           </h2>
           <div className='info'>
             {selectedBuilding ? (
@@ -351,11 +425,11 @@ const Map: React.FC = () => {
                         className="route-btn" 
                         onClick={() => handleBuildingSelect(selectedBuilding)}
                     >
-                        View Info
+                        정보 보기
                     </button>
                 </>
             ) : (
-                <p className="text-sm text-gray-500">Select a building from the list.</p>
+                <p className="text-sm text-gray-500">목록에서 건물을 선택하세요.</p>
             )}
           </div>
         </div>
@@ -363,11 +437,11 @@ const Map: React.FC = () => {
         {/* --- 장소 목록(아코디언) --- */}
         <div className="flex-grow flex flex-col">
           <h2 className="section-title flex justify-between items-center">
-             <span>Location List ({filteredLocations.length})</span>
+             <span>장소 목록 ({filteredLocations.length})</span>
           </h2>
           <div className="location-list overflow-y-auto">
             {filteredLocations.length === 0 ? (
-                <p className='text-center text-gray-500 text-sm p-4 border rounded-lg bg-gray-50'>No results found.</p>
+                <p className='text-center text-gray-500 text-sm p-4 border rounded-lg bg-gray-50'>검색 결과가 없습니다.</p>
             ) : (
                 filteredLocations.map((loc: LocationData) => (
                   <div className={`accordion-item ${openBuildingId === loc.id ? 'active' : ''}`} key={loc.id}>
@@ -390,13 +464,13 @@ const Map: React.FC = () => {
                               className={`tab-btn ${communityTab === 'recommend' ? 'active' : ''}`}
                               onClick={() => setCommunityTab('recommend')}
                             >
-                              <MessageCircle className="w-4 h-4 inline mr-1"/> Recommended Route/Info ({isLoadingPosts ? '...' : recommendedPosts.length})
+                              <MessageCircle className="w-4 h-4 inline mr-1"/> 추천 경로/정보 ({isLoadingPosts ? '...' : recommendedPosts.length})
                             </button>
                             <button 
                               className={`tab-btn ${communityTab === 'board' ? 'active' : ''}`}
                               onClick={() => setCommunityTab('board')}
                             >
-                              Full Board
+                              전체 게시판
                             </button>
                         </div>
 
@@ -405,9 +479,9 @@ const Map: React.FC = () => {
                           <>
                             <div className="post-list-container">
                               {isLoadingPosts ? (
-                                <p className="text-sm text-gray-500 p-2 text-center">Loading posts...</p>
+                                <p className="text-sm text-gray-500 p-2 text-center">게시물 로드중...</p>
                               ) : recommendedPosts.length === 0 ? (
-                                <p className="text-sm text-gray-500 p-2 text-center border rounded-lg bg-white">No recommended routes/tips for this location.</p>
+                                <p className="text-sm text-gray-500 p-2 text-center border rounded-lg bg-white">이 위치에 대한 추천 경로/팁이 없습니다.</p>
                               ) : (
                                 <div className="post-list">
                                   {recommendedPosts.map((post: PostData) => (
@@ -426,16 +500,16 @@ const Map: React.FC = () => {
                             
                             {/* --- 정보 공유 버튼 --- */}
                             <button 
-                                onClick={() => handleSharePost(loc.name)}
+                                onClick={() => handleSharePost(loc.nameKo)}
                                 className='share-btn w-full mt-3 text-sm flex items-center justify-center'
                             >
-                                <Plus className="w-4 h-4 mr-1"/> Share Info for this Building
+                                <Plus className="w-4 h-4 mr-1"/> 이 건물 정보 공유하기
                             </button>
                           </>
                         )}
                         
                         {communityTab === 'board' && (
-                           <p className="text-sm text-gray-500 p-2 text-center border rounded-lg bg-white">Navigate to the full board to view all posts.</p>
+                           <p className="text-sm text-gray-500 p-2 text-center border rounded-lg bg-white">전체 게시판으로 이동하여 모든 글을 확인하세요.</p>
                         )}
 
                       </div>
@@ -460,6 +534,7 @@ const Map: React.FC = () => {
                 </div>
             )}
         </div>
+      </div>
       </div>
     </div>
   );
