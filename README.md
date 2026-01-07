@@ -1,6 +1,4 @@
-#  CampusMap (Spring Boot Project)
-
-> 충북대학교 소프트웨어학과 오픈소스 개발 프로젝트   
+#  CampusMap    
 
 ## 프로젝트 개요
 챗봇을 이용한 다국어 지원 캠퍼스 맵---
